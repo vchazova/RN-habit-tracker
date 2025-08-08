@@ -7,6 +7,7 @@ function RouteGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isAuth) {
+      // FIXME
       // router.replace('/auth')
     }
   });
