@@ -1,11 +1,34 @@
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Button, Text, TextInput, useTheme } from "react-native-paper";
 
 export default function AuthScreen() {
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+
+  const theme = useTheme();
+
   const handleSwitchMode = () => {
     setIsSignUp((prev) => !prev);
+  };
+
+  const handleAuth = async () => {
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
+    //TODO: верификация email, что он в нужном формате, т.к.к сейчас прокатывает и набор цифр
+
+    setError(null);
+    return;
   };
 
   return (
@@ -25,6 +48,7 @@ export default function AuthScreen() {
           keyboardType="email-address"
           placeholder="example@gmail.com"
           mode="outlined"
+          onChangeText={setEmail}
         />
 
         <TextInput
@@ -34,9 +58,12 @@ export default function AuthScreen() {
           keyboardType="email-address"
           placeholder="Password"
           mode="outlined"
+          onChangeText={setPassword}
         />
 
-        <Button style={styles.button} mode="contained">
+        {error && <Text style={{ color: theme.colors.error }}>{error}</Text>}
+
+        <Button style={styles.button} mode="contained" onPress={handleAuth}>
           {isSignUp ? "Sign Up" : "Sign In"}
         </Button>
         <Button
