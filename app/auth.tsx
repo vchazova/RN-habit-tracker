@@ -1,3 +1,5 @@
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
@@ -9,6 +11,8 @@ export default function AuthScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const theme = useTheme();
+  const router = useRouter();
+  const { signIn, signUp } = useAuth();
 
   const handleSwitchMode = () => {
     setIsSignUp((prev) => !prev);
@@ -20,14 +24,33 @@ export default function AuthScreen() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
       return;
     }
 
     //TODO: верификация email, что он в нужном формате, т.к.к сейчас прокатывает и набор цифр
 
     setError(null);
+
+    if (isSignUp) {
+      const error = await signUp(email, password);
+      if (error) {
+        setError(error);
+        return;
+      }
+
+      router.replace("/");
+    } else {
+      const error = await signIn(email, password);
+      if (error) {
+        setError(error);
+        return;
+      }
+
+      router.replace("/");
+    }
+
     return;
   };
 
@@ -55,7 +78,7 @@ export default function AuthScreen() {
           style={styles.input}
           label="Password"
           autoCapitalize="none"
-          keyboardType="email-address"
+          secureTextEntry
           placeholder="Password"
           mode="outlined"
           onChangeText={setPassword}
