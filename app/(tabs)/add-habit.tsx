@@ -1,10 +1,10 @@
 import { Text, View } from "react-native";
 
-export default function LoginScreen() {
+export default function AddHabitScreen() {
   return (
     <View>
       {""}
-      <Text>Login</Text>
+      <Text>AddHabitScreen</Text>
     </View>
   );
 }
