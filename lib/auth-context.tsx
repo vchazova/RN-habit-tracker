@@ -1,17 +1,38 @@
-import { createContext, useContext } from "react";
-import { ID } from "react-native-appwrite";
+import { createContext, useContext, useEffect, useState } from "react";
+import { ID, Models } from "react-native-appwrite";
 import { account } from "./appwrite";
 
 type AuthContextType = {
-  //   user: Models.User<Models.Preferences> | null;
+  user: Models.User<Models.Preferences> | null;
+  isLoadingUser: boolean;
   signUp: (email: string, password: string) => Promise<string | null>;
   signIn: (email: string, password: string) => Promise<string | null>;
+  signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  //   const user = null;
+  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
+    null
+  );
+  const [isLoadingUser, setIsLoadingUser] = useState<boolean>(true);
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    try {
+      const session = await account.get();
+      setUser(session);
+    } catch (err) {
+      setUser(null);
+    } finally {
+      setIsLoadingUser(false);
+    }
+  };
+
   const signUp = async (email: string, password: string) => {
     try {
       await account.create(ID.unique(), email, password);
@@ -27,6 +48,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       await account.createEmailPasswordSession(email, password);
+      const session = await account.get();
+      setUser(session);
       return null;
     } catch (err) {
       if (err instanceof Error) {
@@ -35,9 +58,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return "An error occured during sign in";
     }
   };
+  const signOut = async () => {
+    try {
+      await account.deleteSession("current");
+      setUser(null);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ signIn, signUp }}>
+    <AuthContext.Provider
+      value={{ signIn, signUp, user, isLoadingUser, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );
