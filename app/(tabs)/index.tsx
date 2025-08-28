@@ -2,6 +2,7 @@ import {
   client,
   DATABASE_ID,
   databases,
+  HABIT_COMPLETIONS_COLLECTION_ID,
   HABITS_COLLECTIO_ID,
   RealtimeResponse,
 } from "@/lib/appwrite";
@@ -10,7 +11,7 @@ import { Habit } from "@/types/database.type";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Query } from "react-native-appwrite";
+import { ID, Query } from "react-native-appwrite";
 import { Swipeable } from "react-native-gesture-handler";
 import { Button, Surface, Text } from "react-native-paper";
 
@@ -23,6 +24,7 @@ export default function Index() {
 
   useEffect(() => {
     if (user) {
+      // old-type-channel via collections
       const channel = `databases.${DATABASE_ID}.collections.${HABITS_COLLECTIO_ID}.documents`;
       const habitsSubscription = client.subscribe(
         channel,
@@ -94,9 +96,28 @@ export default function Index() {
     }
   };
   const handleCompleteHabit = async (id: string) => {
+    if (!user) return;
+
     try {
+      const currentDate = new Date().toISOString();
+      await databases.createDocument(
+        DATABASE_ID,
+        HABIT_COMPLETIONS_COLLECTION_ID,
+        ID.unique(),
+        {
+          habit_id: id,
+          user_id: user?.$id,
+          completed_at: currentDate,
+        }
+      );
+
+      const currentHabit = habits?.find((h) => h.$id === id);
+      if (!currentHabit) return;
+
+      // FIXME: более сложная логика для страйков с проверкой действительно ли прошлый раз был вчера и чтобы в 1 день нельзя было 100 раз добавить страйк
       await databases.updateDocument(DATABASE_ID, HABITS_COLLECTIO_ID, id, {
-        // ...
+        streak_count: currentHabit.streak_count + 1,
+        last_completed: currentDate,
       });
     } catch (error) {
       console.error(error);
@@ -127,6 +148,7 @@ export default function Index() {
         >
           {habits.map((habit, i) => (
             //TODO: почитать про ключи в списках для реакта - что там лучше использовать и должно ли это быть строго уникальным
+            //TODO: почитать про refs - когда и зачем их стоит закрывать
             <Swipeable
               ref={(ref) => {
                 swipeableRefs.current[habit.$id] = ref;
@@ -139,7 +161,11 @@ export default function Index() {
               onSwipeableOpen={(direction) => {
                 if (direction === "left") {
                   handleDeleteHabit(habit.$id);
-                } else handleCompleteHabit(habit.$id);
+                } else if (direction === "right") {
+                  handleCompleteHabit(habit.$id);
+                }
+
+                swipeableRefs.current[habit.$id]?.close();
               }}
             >
               <Surface style={styles.card} elevation={0}>
