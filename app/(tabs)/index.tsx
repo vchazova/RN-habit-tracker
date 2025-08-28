@@ -53,7 +53,7 @@ export default function Index() {
         }
       );
 
-      const completionsChannel = `databases.${DATABASE_ID}.tables.${HABIT_COMPLETIONS_COLLECTION_ID}.rows`;
+      const completionsChannel = `databases.${DATABASE_ID}.collections.${HABIT_COMPLETIONS_COLLECTION_ID}.documents`;
       const completionsSubscriptions = client.subscribe(
         completionsChannel,
         (response: RealtimeResponse) => {
