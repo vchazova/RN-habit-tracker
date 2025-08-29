@@ -27,6 +27,9 @@ export default function Index() {
     if (user) {
       // old-type-channel via collections
       const habitsChannel = `databases.${DATABASE_ID}.collections.${HABITS_COLLECTIO_ID}.documents`;
+      const completionsChannel = `databases.${DATABASE_ID}.collections.${HABIT_COMPLETIONS_COLLECTION_ID}.documents`;
+
+      // FIXME: слушать изменения для всего приложения централизовано
       const habitsSubscription = client.subscribe(
         habitsChannel,
         (response: RealtimeResponse) => {
@@ -52,8 +55,6 @@ export default function Index() {
           }
         }
       );
-
-      const completionsChannel = `databases.${DATABASE_ID}.collections.${HABIT_COMPLETIONS_COLLECTION_ID}.documents`;
       const completionsSubscriptions = client.subscribe(
         completionsChannel,
         (response: RealtimeResponse) => {
@@ -120,7 +121,9 @@ export default function Index() {
 
   const renderRightActions = (habitId: string) =>
     isHabitCompleted(habitId) ? (
-      <Text style={{ color: "#fff" }}>Already completed!</Text>
+      <Text style={[styles.swipeActionRight, styles.swipeActionRightCompleted]}>
+        Already completed!
+      </Text>
     ) : (
       <View style={styles.swipeActionRight}>
         <MaterialCommunityIcons
@@ -353,5 +356,9 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     marginTop: 2,
     paddingRight: 16,
+  },
+  swipeActionRightCompleted: {
+    color: "#fff",
+    textAlign: "right",
   },
 });
