@@ -62,6 +62,10 @@ export default function StreaksScreen() {
       ?.filter((c) => {
         return c.habit_id === habitId;
       })
+      .map((c) => ({
+        ...c,
+        completed_at: new Date(c.completed_at).setHours(0, 0, 0, 0),
+      }))
       .sort(
         (a, b) =>
           new Date(a.completed_at).getTime() -
@@ -75,7 +79,6 @@ export default function StreaksScreen() {
       };
     }
 
-    let streak = 0;
     let bestStreak = 0;
     let total = habitCompletions.length;
 
@@ -84,14 +87,15 @@ export default function StreaksScreen() {
 
     habitCompletions?.forEach((c) => {
       const date = new Date(c.completed_at);
+
       if (lastDate) {
         const diff =
           (date.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24);
 
         if (diff <= 1.5) {
           currentStreak += 1;
-        } else {
           if (currentStreak > bestStreak) bestStreak = currentStreak;
+        } else {
           currentStreak = 1;
         }
       } else {
@@ -100,11 +104,10 @@ export default function StreaksScreen() {
       }
 
       lastDate = date;
-      streak = currentStreak;
     });
 
     return {
-      streak,
+      streak: currentStreak,
       bestStreak,
       total,
     };
