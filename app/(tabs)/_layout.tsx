@@ -20,7 +20,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          headerShown: false,
+          // headerShown: false,
           title: "Today's Habbits",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
@@ -34,8 +34,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="streaks"
         options={{
-          headerShown: false,
-          title: "Streaks",
+          // headerShown: false,
+          title: "Habit Streaks",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="chart-line"
@@ -48,7 +48,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="add-habit"
         options={{
-          headerShown: false,
+          // headerShown: false,
           title: "Add Habit",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
