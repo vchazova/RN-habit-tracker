@@ -34,11 +34,8 @@ This project is a minimal habit tracker where users can add, track, and manage d
 
 | ![Welcome](./assets/screenshots/welcome.jpg) | ![Add Habit](./assets/screenshots/add_habbit.jpg) | ![Streaks](./assets/screenshots/streaks.jpg) |
 |----------------------------------------------|---------------------------------------------------|----------------------------------------------|
-| <img src="./assets/screenshots/welcome.jpg" width="322" /> | <img src="./assets/screenshots/add_habbit.jpg" width="302" /> | <img src="./assets/screenshots/streaks.jpg" width="300" /> |
 
 | ![Main](./assets/screenshots/main.jpg) | ![Main2](./assets/screenshots/main2.jpg) | ![Main3](./assets/screenshots/main3.jpg) |
-|----------------------------------------|-----------------------------------------|-----------------------------------------|
-| <img src="./assets/screenshots/main.jpg" width="308" /> | <img src="./assets/screenshots/main2.jpg" width="308" /> | <img src="./assets/screenshots/main3.jpg" width="308" /> |
 
 ---
 
